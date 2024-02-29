@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<robot name="sentry_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<!-- Import sentry mecanum wheels -->
+	<xacro:include filename="$(find sentry)/models/wheel/mecanum_wheel.urdf.xacro" />
+	<xacro:include filename="$(find sentry)/models/base/sentry_base.urdf.xacro" />
+
+	<!-- Wheel parameters -->
+	<xacro:property name="wheel_offset_x" value="0.2225" />    <!-- x,y,z in translation from base_link to the center of the wheel -->
+	<xacro:property name="wheel_offset_y" value="0.2045" />
+	<xacro:property name="wheel_offset_z" value="0.0" />
+
+	<xacro:macro name="robot">
+		<xacro:sentry_base/>
+
+		<xacro:mecanum_wheel prefix="sentry_front_right" parent="sentry_base_link" reflect="false">
+			<origin xyz="${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+		<xacro:mecanum_wheel prefix="sentry_front_left" parent="sentry_base_link" reflect="true">
+			<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+		<xacro:mecanum_wheel prefix="sentry_back_left" parent="sentry_base_link" reflect="true">
+			<origin xyz="-${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+		<xacro:mecanum_wheel prefix="sentry_back_right" parent="sentry_base_link" reflect="false">
+			<origin xyz="-${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+   </xacro:macro>
+
+   <xacro:robot/>
+
+</robot>
+

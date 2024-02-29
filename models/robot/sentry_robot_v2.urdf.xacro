@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+
+<robot name="sentry_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<!-- Wheel parameters -->
+	<xacro:property name="PI" value="3.1415926535897931" />
+
+	<!-- Wheels -->
+	<xacro:property name="wheel_radius" value="0.075" />
+	<xacro:property name="wheel_height" value="0.04" />
+	<xacro:property name="wheel_mass" value="0.353" /> <!-- in kg-->
+
+	<xacro:macro name="cylinder_inertia" params="m r h">
+	  <inertia  ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
+		    iyy="${m*r*r/2}" iyz = "0"
+		    izz="${m*(3*r*r+h*h)/12}" />
+	</xacro:macro>
+	
+	<xacro:property name="wheel_offset_x" value="0.1" />    <!-- x,y,z in translation from base_link to the center of the wheel -->
+	<xacro:property name="wheel_offset_y" value="0.1" />
+	<xacro:property name="wheel_offset_z" value="0.01" />
+	 
+	<xacro:macro name="sentry_base">
+
+	  <!-- Robot mechanical and motor parameters -->
+	  <xacro:property name="PI" value="3.1415926535897931"/>
+	  <xacro:property name="wheel_width" value="0.175" />
+
+		<!-- BASE FOOTPRINT -->
+		<link name="sentry_base_footprint">
+		  <visual>
+			  <origin xyz="0 0 0" rpy="0 0 0" />
+			  <geometry>
+				 <box size="0.001 0.001 0.001" />
+			  </geometry>
+		  </visual>
+		</link>
+
+		<joint name="sentry_base_footprint_joint" type="fixed">
+		  <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0" /> <!-- ${wheel_radius} property must be defined inside wheel description -->
+		  <parent link="sentry_base_footprint"/>
+		  <child link="sentry_base_link" />
+		</joint>
+
+	  <!-- BASE_LINK -->
+	  <link name="sentry_base_link">
+	    <inertial>
+	      <mass value="125.0" />
+	      <origin xyz="0 0 0" />
+	      <inertia  ixx="1.391" ixy="0.004"  ixz="0.0"  iyy="6.853"  iyz="0.0"  izz="6.125" />
+	    </inertial>
+
+	    <visual>
+	       <origin xyz="0 0 0" rpy="0 0 0" />
+
+	       <geometry>
+		     <box size="0.2 0.2 0.1"/>
+	       </geometry>
+
+	       <material name="darkgrey">
+		 <color rgba="0.1 0.1 0.1 1"/>
+	       </material>
+
+	    </visual>
+
+	    <collision>
+	       <origin xyz="0 0 0" rpy="0 0 0 " />
+	       <geometry>
+		 <box size="0.2 0.2 0.1"/>
+	       </geometry>
+	    </collision>
+
+	  </link>
+
+  	</xacro:macro>
+  	
+	<xacro:macro name="mecanum_wheel" params="prefix parent *origin reflect">
+
+	    <link name="${prefix}_wheel_link">
+	      <visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<xacro:if value="${reflect}">
+		  <geometry>
+		    <mesh filename="package://sentry/meshes/left_threaded_mecanum_wheel.stl" />
+		  </geometry>
+		</xacro:if>
+		<xacro:unless value="${reflect}">
+		  <geometry>
+		    <mesh filename="package://sentry/meshes/right_threaded_mecanum_wheel.stl" />
+		  </geometry>
+		</xacro:unless>
+	      </visual>
+
+	      <collision>
+		<origin xyz="0 0 0" rpy="${PI/2} 0 0" />
+		<geometry>
+			<cylinder length="${wheel_height}" radius="${wheel_radius}" />
+		</geometry>
+	      </collision>
+
+	      <inertial>
+		<mass value="${wheel_mass}" />
+		<origin xyz="0 0 0" />
+		<cylinder_inertia  m="${wheel_mass}" r="${wheel_radius}" h="${wheel_height}" />
+	      </inertial>
+	      
+	    </link>
+	    
+	    <joint name="${prefix}_wheel_joint" type="continuous">
+	      <parent link="${parent}"/>
+	      <child link="${prefix}_wheel_link"/>
+	      <xacro:insert_block name="origin" />
+	      <axis xyz="0 1 0" rpy="0 0 0" />
+	      <limit effort="100" velocity="100"/>
+	      <joint_properties damping="0.0" friction="0.0"/>
+	    </joint>
+
+	    <!-- Transmission is important to link the joints and the controller (see summit_xl_control/config/summit_xl_control.yaml)-->
+	    <transmission name="${prefix}_wheel_joint_trans">
+	      <type>transmission_interface/SimpleTransmission</type>
+	      <joint name="${prefix}_wheel_joint" >
+		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+	      </joint>
+	      <actuator name="${prefix}_wheel_joint_motor">
+		 <mechanicalReduction>1</mechanicalReduction>
+	      </actuator>
+	    </transmission>
+
+	    <gazebo reference="${prefix}_wheel_link">
+			<mu1 value="1.0"/>
+			<mu2 value="1.0"/>
+			<kp value="10000000.0" />
+			<kd value="1.0" />
+			<fdir1 value="1 0 0"/>
+		<turnGravityOff>false</turnGravityOff>
+	    </gazebo>
+
+	  </xacro:macro>
+	  <xacro:macro name="sentry">
+		<xacro:sentry_base/>
+
+		<xacro:mecanum_wheel prefix="sentry_front_right" parent="sentry_base_link" reflect="false">
+			<origin xyz="${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+		<xacro:mecanum_wheel prefix="sentry_front_left" parent="sentry_base_link" reflect="true">
+			<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+		<xacro:mecanum_wheel prefix="sentry_back_left" parent="sentry_base_link" reflect="true">
+			<origin xyz="-${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+		<xacro:mecanum_wheel prefix="sentry_back_right" parent="sentry_base_link" reflect="false">
+			<origin xyz="-${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:mecanum_wheel>
+
+   	  </xacro:macro>
+
+   <xacro:sentry/>
+
+</robot>
+
