@@ -1,0 +1,27 @@
+<launch>
+    <!-- Define the URDF path -->
+    <let name="urdf_path" value="$(find-pkg-share sentry)/models/robot/sentry_robot_v3.urdf"/>
+    <!-- <let name="urdf_path" value="$(find-pkg-share sentry)/models/my_robot.urdf.xacro" /> -->
+
+    <!-- Launch robot state publisher -->
+    <node pkg="robot_state_publisher" exec="robot_state_publisher">
+        <param name="robot_description" value="$(command 'xacro $(var urdf_path)')"/>
+    </node>
+
+    <!-- Launch Gazebo -->
+    <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
+        <arg name="world" value="$(find-pkg-share sentry)/worlds/arena.world"/>
+    </include>
+
+    <!-- Spawn the robot entity in Gazebo with specified initial location -->
+    <node pkg="gazebo_ros" exec="spawn_entity.py" name="spawn_entity" output="screen" args="-topic robot_description -entity sentry_robot -x -2.95 -y -0.605 -z 0 -R 0 -P 0 -Y 0" />
+
+    <!-- <node pkg="gazebo_ros" exec="spawn_entity.py" name="spawn_entity" output="screen" args="-topic robot_description -entity sentry_robot" /> -->
+
+    <!-- Launch RViz2 -->
+    <node pkg="rviz2" exec="rviz2" output="screen" args="-d $(find-pkg-share sentry)/rviz/urdf_config.rviz"/>
+
+    <!-- Launch joint state publisher GUI -->
+    <node pkg="joint_state_publisher_gui" exec="joint_state_publisher_gui"/>
+  
+</launch>

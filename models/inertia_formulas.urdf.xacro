@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+    <!-- Moment of inertia macro function for a cylinder -->
+    <xacro:macro name="cylinder_inertia" params="mass radius height xyz rpy">
+        <inertial>
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <mass value="${mass}" />
+            <inertia ixx="${mass * (3 * radius**2 + height**2) / 12}" ixy="0" ixz="0" iyy="${mass * (3 * radius**2 + height**2) / 12}" iyz="0" izz="${mass * radius**2 / 2}" />
+         </inertial>
+    </xacro:macro>
+
+    <!-- Moment of inertia macro function for a square -->
+    <xacro:macro name="cuboid_inertia" params="mass length width height xyz rpy">
+        <inertial>
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <mass value="${mass}" />
+            <inertia ixx="${(mass/12) * (width**2 + height**2)}" ixy="0" ixz="0" iyy="${(mass/12) * (length**2 + height**2)}" iyz="0" izz="${(mass/12) * (length**2 + width**2)}" />  
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="sphere_inertia" params="mass radius xyz rpy">
+        <inertial>
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <mass value="${mass}" />
+            <inertia ixx="${(2 * mass * radius**2) / 5}" ixy="0" ixz="0" iyy="${(2 * mass * radius**2) / 5}" iyz="0" izz="${(2 * mass * radius**2) / 5}" />  
+        </inertial>
+    </xacro:macro>
+
+</robot>
