@@ -1,5 +1,5 @@
 <launch>
-    <let name="urdf_path" value="$(find-pkg-share sentry)/models/my_robot.urdf.xacro" />
+    <let name="urdf_path" value="$(find-pkg-share sentry)/models/sentry_robot_v3.urdf" />
     <!-- Launch robot state publisher -->
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
         <param name="robot_description" value="$(command 'xacro $(var urdf_path)')"/>
