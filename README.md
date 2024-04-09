@@ -5,16 +5,16 @@ Robomaster repo for sentry robot modeling, autonomous navigation stack, and othe
 
   In one terminal:
   ```
-   source install/setup.bash
    colcon build
+   source install/setup.bash
    ros2 launch sentry sentry_simulation.launch.py
   ```
 ...Wait for simulation to boot up completely...
 
   Open a separate terminal:
   ```
-   source install/setup.bash
    colcon build
+   source install/setup.bash
    ros2 launch sentry sentry_navigation.launch.py
   ```
 
