@@ -1,19 +1,22 @@
 # Sentry Robot
 Robomaster repo for sentry robot modeling, autonomous navigation stack, and other fun things
 
-TO RUN NAV2:
+## TO RUN NAV2:
 
   In one terminal:
-  $ source install/setup.bash
-  $ colcon build
-  $ ros2 launch sentry sentry_simulation.launch.py
-
+  ```
+   source install/setup.bash
+   colcon build
+   ros2 launch sentry sentry_simulation.launch.py
+  ```
 ...Wait for simulation to boot up completely...
 
   Open a separate terminal:
-  $ source install/setup.bash
-  $ colcon build
-  $ ros2 launch sentry sentry_navigation.launch.py
+  ```
+   source install/setup.bash
+   colcon build
+   ros2 launch sentry sentry_navigation.launch.py
+  ```
 
 ...Wait for AMCL message in 2nd terminal...
 
