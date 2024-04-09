@@ -14,7 +14,7 @@ def generate_launch_description():
   #gazebo_models_path = 'models'
   package_name = 'sentry'
   robot_name_in_model = 'sentry_robot'
-  rviz_config_file_path = 'rviz/main.rviz'
+  rviz_config_file_path = 'rviz/nav2_config.rviz'
   urdf_file_path = 'models/robot/sentry_robot_v3.urdf'
   world_file_path = 'worlds/arena.world'
      
